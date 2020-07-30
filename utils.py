@@ -36,17 +36,8 @@ class Deeplabv3Config:
 
 
 def crossentropy_with_reshape(y_true, y_pred):
-    # print(y_true, y_pred)
-    # y_true_shape = tf.shape(y_true)
-    y_pred_shape = tf.shape(y_pred)
-    # print(y_true_shape)
-    # print(y_pred_shape)
-    new_shape = (y_pred_shape[0], y_pred_shape[1]*y_pred_shape[2], y_pred_shape[3])
-    # print(new_shape)
-    labels = K.reshape(y_true, new_shape)
-    # print(labels)
-    logits = K.reshape(y_pred, new_shape)
-    # print(logits)
+
+    labels = K.reshape(y_true, tf.shape(y_pred))
     return K.categorical_crossentropy(target=y_true,output=y_pred)#, from_logits=True)
 
     

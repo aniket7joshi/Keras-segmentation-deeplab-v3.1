@@ -37,7 +37,7 @@ def get_callbacks(snapshot_every_epoch, snapshot_path, checkpoint_prefix):
 
     os.makedirs(snapshot_path, exist_ok=True)
     checkpoint = tf.keras.callbacks.ModelCheckpoint(
-        os.path.join(snapshot_path, str(checkpoint_prefix)+'_{epoch:02d}.h5'),
+        os.path.join(snapshot_path, str(checkpoint_prefix)+'_{epoch:02d}'),
         verbose=1,
         period=snapshot_every_epoch)
 
@@ -63,18 +63,13 @@ def get_uncompiled_model(input_shape, num_classes, backbone, infer=False):
 
     #elif net == 'subpixel':
     x = Subpixel(num_classes, kernel_size=1, r=scale, kernel_initializer=ICNR(scale), padding='same')(base_model.output)
-    #x = Reshape((input_shape[0]*input_shape[1], -1)) (x)
-    #x = Reshape((input_shape[0]*input_shape[1], num_classes)) (x)
-    x = Activation('softmax', name = 'pred_mask')(x)
-    model = Model(base_model.input, x, name='deeplabv3p_subpixel')
+    # if infer:
+    #     x = Activation('softmax')(x)
+    # else:
+    x = Reshape((input_shape[0]*input_shape[1], num_classes)) (x)
+    x = Activation('softmax')(x)
 
-    # # Do ICNR
-    # for layer in model.layers:
-    #     if type(layer) == Subpixel:
-    #         c, b = layer.get_weights()
-    #         w = ICNR(scale=scale)(shape=c.shape)
-    #         #W = tf.convert_to_tensor(w, dtype=tf.float32)
-    #         layer.set_weights([w, b])
+    model = Model(base_model.input, x, name='deeplabv3p_subpixel')
 
     return model
 

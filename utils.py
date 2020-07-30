@@ -37,8 +37,9 @@ class Deeplabv3Config:
 
 def crossentropy_with_reshape(y_true, y_pred):
 
-    labels = K.reshape(y_true, tf.shape(y_pred))
-    return K.categorical_crossentropy(target=y_true,output=y_pred)#, from_logits=True)
+    # labels = K.reshape(y_true, tf.shape(y_pred))
+    labels=y_true
+    return K.categorical_crossentropy(target=labels,output=y_pred)#, from_logits=True)
 
     
 # from collections import Counter

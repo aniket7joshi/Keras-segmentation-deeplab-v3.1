@@ -80,7 +80,7 @@ if __name__ == '__main__':
     num_classes = 151
     batch_size = 1
     backbone = 'xception'
-    config = Deeplabv3Config(600, 600,16,4)
+    config = Deeplabv3Config(300, 300,16,4)
 
     model = get_uncompiled_model(config.input_shape, num_classes, backbone)
     # model.load_weights('weights/{}_{}.h5'.format(backbone, 'subpixel'), by_name=True)
@@ -89,12 +89,12 @@ if __name__ == '__main__':
     #print(model.summary())
 
     model.compile(optimizer = Adam(lr=1e-3, epsilon=1e-8, decay=1e-6),
-                  loss = crossentropy_with_reshape)#, metrics = metrics)
+                  loss = tf.keras.losses.categorical_crossentropy)#, metrics = metrics)
 
     # exit()
 
     input_function = parse_tfrecords(
-        filenames='/home/pratik/Desktop/experiments/PLATFORM/Keras-segmentation-deeplab-v3.1/dataset/ADE20K/tfrecord/train.tfrecords',
+        filenames='./tfrecord/test.tfrecords',
         height=config.height,
         width=config.width,
         num_classes=num_classes,
@@ -106,8 +106,9 @@ if __name__ == '__main__':
         checkpoint_prefix='deeplab_top_5_classes_focal_loss')
 
     model.fit(input_function, 
-        epochs=1, 
-        steps_per_epoch=2,)
+        epochs=20, 
+        steps_per_epoch=100,)
         # initial_epoch=0, 
         # callbacks=callbacks)
+    model.save('./dogs_checkpoints.h5', include_optimizer=False, overwrite=True)
     
